@@ -1,0 +1,168 @@
+
+body {
+  background-color: #F0F0F0;
+  background-repeat: repeat;
+  font-size: 62.5%;
+}
+
+.clear { clear: both; }
+
+.content {
+  margin: 0 auto;
+  float: none;
+  width: 100%;
+  
+  max-width: 924px;
+ background-color:#97bbed;
+  background-repeat: repeat;  
+  border-radius: 4px;
+  display: block;
+  overflow: hidden;
+}
+
+ h1 {
+  text-align: right;
+  margin: 60px 0 40px 0;
+  font-size: 4.4em;
+  font-family: 'Abril Fatface', Georgia, serif;
+  font-weight: 400;
+	color: fff;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+  -moz-text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+  -webkit-text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+}
+h2 {
+  font-size: 2.2em;
+  margin-bottom: 0.3em;
+  font-family: 'Abril Fatface', Georgia, serif;
+  font-weight: 200;
+  color: blue;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+img {
+   padding:10px 20px 20px 20px; float: left;
+}
+#main {
+  width: 95.7965367965368%;
+  padding: 20px 20px ;
+  float: left;
+  color:blue;
+  background-repeat: repeat;
+  background-color: #F0F0F0 ;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  -moz-border-top-right-radius: 4px;
+  -moz-border-bottom-right-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+  box-shadow: inset 1px -1px 5px 0px rgba(0,0,0,.6);
+  -moz-box-shadow: inset 1px -1px 5px 0px rgba(0,0,0,.6);
+  -webkit-box-shadow: inset 1px -1px 5px 0px rgba(0,0,0,.6);
+}
+#movie_image{
+padding: 10px 0;
+	width: 54.7965367965368%;
+ margin-top: 20px;
+  margin-right: 20px;
+  float: right;
+
+}
+#comments_stream {
+ width: 73.7965367965368%;
+ margin-top: 10px;
+  margin-right: 20px;
+  float: right;
+  background-repeat: repeat;
+  background-color: #c9e0ec;
+  color:black;
+	border: 1px solid #4695bd;
+  box-shadow: inset 1px 1px 2px 0px rgba(0,0,0,.3);
+  -moz-box-shadow: inset 1px 1px 2px 0px rgba(0,0,0,.3);
+  -webkit-box-shadow: inset 1px 1px 2px 0px rgba(0,0,0,.3);
+  border-radius: 4px;
+}
+
+
+#menu
+  {
+	
+	height:30px;
+	background: #000;
+	color: #FFFFFF;
+	font-weight: bold;
+	font-family: Lucida Sans Unicode;
+	font-size: 16;
+	padding-left:10px;
+
+}
+
+#menu ul {
+	margin: 0px;
+	list-style: none;
+	
+	
+}
+#menu li {
+	display: inline;
+
+}
+#menu li a{
+	float: left;
+	width: 98px;
+	color: blue;
+	text-decoration: none;
+	text-align: center;
+}
+#menu li a:hover{
+	color: #000;
+	background: url(images/templatemo_h2.jpg) no-repeat;
+}
+.comment_block {
+  margin-bottom: 1.5em;
+}
+.comment_block .date_stamp {
+  font-size: 1.4em;
+  font-family: 'Abril Fatface', Georgia, serif;
+  font-weight: 400;
+  color: #872a1b;
+  padding-bottom: 0.4em;
+}
+p.submitter {
+  font-family: 'Merriweather', Georgia, serif;
+  font-weight: 400;
+  font-size: 1.2em;
+  color: #c1bcbc;
+}
+
+p { 
+  font-family: Garamond;
+  font-weight: 400;
+  font-size: 16;
+  color: black;
+  padding-bottom: 0.4em;
+  line-height: 1.4;
+}
+
+
+/*******************************************************/
+
+@media screen and (max-width: 500px) {
+  .inputs {
+    width: 100%;
+  }
+  .inputs h1 {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 3.6em;
+  }
+  button {
+    margin-top: 0px;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 0.8em;
+  }
+  .main {
+    width: 100%;
+  }
+}

@@ -1,0 +1,110 @@
+<html>
+<head>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+	<link rel="stylesheet" type="text/css" href="./css/movieInfo.css" />
+</head>
+<body>
+	<div class="content"> 
+		<p style="float:right; padding-right:20px;"><a href="./index.html">Homepage</a></p>
+		<p style="float:right; padding-right:20px;"><a href="./admin.html">Back</a></p>
+		<div style="padding: 20px 20px;">
+			<h2>Modify Movie Data</h2>
+			<P>Genre:<select id="genreCodeSelect"></select>
+			<P>Movie:<select id="movieNumberSelect"></select>
+
+			<P>Data: 
+			<select id="movieDataSelect">
+				<option value="mname">Movie Name</option>
+				<option value="image">Movie Image</option>
+				<option value="description">Movie Description</option>
+			</select>
+			<P><input type="text" id="newData" >
+
+			<input type="button" id="submitButton" value="Modify">
+		</div>
+	</div>
+	
+<script type="text/javascript">
+	$(document).ready(function() {
+		var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/');
+		ref.once("value", function(snapshot) {
+		if (snapshot.val() === null) {
+			alert("No Genre Available");
+			return false;
+		}
+		var first = true;
+		for (var key in snapshot.val()) {
+			if (first) {
+				$('#genreCodeSelect').append('<option selected value="' + key + '">' + 
+                                          snapshot.val()[key].gname + '</option>');
+				first = false;
+			}
+			else
+				$('#genreCodeSelect').append('<option value="' + key + '">' + 
+                                          snapshot.val()[key].gname + '</option>');
+		}
+		$('#genreCodeSelect').trigger('change');
+    });
+
+
+	$('#genreCodeSelect').change(function() {
+		var dc = $("#genreCodeSelect").val();
+		var url = 'https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+ dc +'/movies/movie/';
+		var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+
+                           dc +'/movies/movie/');
+		$('#movieNumberSelect').empty();
+   
+		ref.once("value", function(snapshot) {
+			if (snapshot.val() === null) {
+				alert("No Moives Available");
+				return false;
+			}
+			for (var key in snapshot.val()) {
+				$('#movieNumberSelect').append('<option value="' + key +'">' + 
+                                          snapshot.val()[key].mno + ":"+
+                                          snapshot.val()[key].mname + '</option>');
+   
+			}
+		});
+		$('#movieNumberSelect').trigger('change');
+	});
+  
+});
+
+
+	$("#submitButton").click(function () {
+		var r=confirm("Are you sure to modify this data?");
+		if(r==true){
+			var dc = $("#genreCodeSelect").val();
+			var mc = $("#movieNumberSelect").val();
+			var ds = $("#movieDataSelect").val();
+			var nd = $("#newData").val();
+			var url = 'https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+ dc +'/movies/movie/';
+			var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+
+                           dc +'/movies/movie/');
+			var newref = ref.child(mc);
+			$('#movieDataSelect').empty();
+			var onComplete = function(error) {
+				if (error) 
+					alert('Synchronization failed.');
+				else
+					alert('Synchronization succeeded.');
+			};
+	
+			if(ds == "mname")
+				newref.update({mname:nd}, onComplete);
+			else if(ds == "image")
+				newref.update({image:nd}, onComplete);
+			else if(ds == "description")
+				newref.update({description:nd}, onComplete);
+   
+		}
+	
+    
+	});
+
+</script>
+
+</body>
+</html>

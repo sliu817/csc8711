@@ -1,0 +1,164 @@
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>One Sentence Movie Review!</title>
+	<link rel="stylesheet" type="text/css" href="./css/index.css" />
+	<link rel="stylesheet" type="text/css" href="./css/star.css" />
+	<script type='text/javascript' src='http://static.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase-auth-client.js'></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Abril+Fatface|Merriweather:400' rel='stylesheet' type='text/css'>
+</head>
+<body>
+  <div class="content"> 
+    <div class="inputs">
+      <div class="inputs_wrapper">
+		<div id="log" style="align:left; font-family: Georgia; font-size: 12px"><a href="./adminLogin.html">Login as Admin</a></div>
+		<div id="loginDiv">
+			<a href="#" onclick="onLoginButtonClicked()" id="login" style="color:yellow;font-size: 14px">Login</a><div id="name" style="float:right;" ></div>  
+		</div>
+		<a href="#" onclick="onLogoutButtonClicked()" id="logout-button"style="color:yellow;font-size: 14px">Logout</a>
+
+ <script type="text/javascript">
+	var HomeRef = new Firebase('https://sha-gsu-csc8711.firebaseIO.com'); 
+	var myUserID = null;
+	var username = null;
+	//Create an Firebase Simple Login client so we can do Facebook auth
+	var authClient = new FirebaseAuthClient(HomeRef, function(error, user) {
+		if (error) {
+			// an error occurred while attempting login
+			alert(error);
+		} else if(user) {
+			myUserID = user.id;
+			username = user.displayName;
+			//alert("Hello," + user.displayName);
+			$("#name").append("<p style='color:yellow'>Hello, "+user.displayName+'</p>');
+		}
+	});
+	
+	function onLoginButtonClicked() {
+		// attempt to log the user in with your preferred authentication provider
+		authClient.login('facebook');
+	}	
+	
+	function onLogoutButtonClicked() {
+		myUserID = null;
+		$("#name").text("");
+		authClient.logout();
+		
+		if(myUserID == null)
+			alert("log out successfully!");
+	}	
+</script>
+ 
+        <h1>One Sentence Movie Review!</h1>	
+        <div id="new_comment">
+			<p style="font:Arial, size:12px">Today's Movie: </p><h2>The God Father(1972)</h2><br/>
+			<textarea rows="5" columns="200%" id='comment' placeholder='Write your comment here...'></textarea>
+			
+			<!--Add a rating star to replace name. Name is got from the login system.--->
+			<form name = "ratingform" class="rating">Your Rating:
+				<input type="radio" id="star5" name="rating" value="5"  onClick ="GetSelectedItem()"/><label for="star5" title="Rocks!">5 </label>
+				<input type="radio" id="star4" name="rating" value="4" onClick ="GetSelectedItem()"/><label for="star4" title="Pretty good">4</label>
+				<input type="radio" id="star3" name="rating" value="3"onClick ="GetSelectedItem()" /><label for="star3" title="Meh">3 </label>
+				<input type="radio" id="star2" name="rating" value="2" onClick ="GetSelectedItem()"/><label for="star2" title="Kinda bad">2 </label>
+				<input type="radio" id="star1" name="rating" value="1" onClick ="GetSelectedItem()"/><label for="star1" title="Sucks big time">1</label>
+			</form>
+			
+<script type="text/javascript">
+	var star_val;
+	function GetSelectedItem() {
+		var doc=document.ratingform.rating;
+		for (var i=0; i < doc.length; i++)
+		{
+			if (doc[i].checked)
+				star_val = doc[i].value;   
+		}
+	}
+</script>
+				
+			<button type="button" ID="submit">Submit</button>
+        </div>
+        <div class="footer">
+          Made by <a href="http://tinman.cs.gsu.edu/~sliu15/">Sha Liu</a> ,Zhenhua Li and Jiepeng Zhang <br/> with <a href="http://firebase.com">
+		  <img src="./images/firebase-logo.jpeg" width="50px" height ="16px"></a>  
+		  <iframe src="https://www.facebook.com/plugins/like.php?href=index.html" scrolling="no" frameborder="0"  style="border:none; width:450px; height:80px"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="main"><div id="menu"><ul><div id="genre"></div></ul></div></div>
+	<div id="movie_image"></div>
+	<div id="comments_stream"> </div>
+  </div>
+  
+<script type="text/javascript">
+	var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'); 
+	ref.once("value", function(snapshot) {
+		if (snapshot.val() === null) {
+			alert("No Genres Available");
+			return false;
+		}
+		for (var key in snapshot.val())
+		{
+			$('#genre').append("<li><a href='moviesList.html?gkey=" + key + "'>" + snapshot.val()[key].gname + "</a></li>");
+		}
+	});
+	
+	var newref = ref.child('0/movies/movie');
+	var comment = ref.child('0/movies/movie/1/reviews/review');
+	
+	newref.limit(4).once("value", function(snapshot) {
+		if (snapshot.val() === null) {
+			alert("No Movie info Available");    
+		}   
+		for(var key in snapshot.val())
+		$('#movie_image').append("<a href='./WriteReview.html?gkey=0&mkey="+key+"'><img src='" + snapshot.val()[key].image +"' width=100 height=130 align=left >");   
+		
+  
+	});
+
+	$("#submit").click(function () {
+	
+		var review = $("#comment").val();
+		var name = username;
+		var star = star_val;
+   
+		if (review.length === 0) {
+			alert("comment is empty");
+			return;
+		}
+		var homeref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/0/movies/movie');
+		var aref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/0/movies/movie/1/reviews/review');
+	
+		if(myUserID == null) 
+			alert("You must log in to leave a comment");
+		else{
+			aref.once("value", function(snapshot) {
+				if (snapshot.val() === null) {
+					homeref.child('1/reviews/review').set([{userid:name, content:review,rate:star}]);  //homeref.child('1/reviews/review').set([{userid:name, content:review, rate:star}]);
+					return;
+			}
+			var gs = snapshot.val();
+     
+			gs.push({userid:name, content:review,rate:star});    //homeref.child('1/reviews/review').set([{userid:name, content:review, rate:star}]);
+			aref.set(gs);
+			alert("Comment Added");
+		});
+		$("#comment").val("");
+		$("#name").val("");
+		}
+	});
+
+    comment.limit(20).on("child_added", function(snapshot) {
+		var content= snapshot.val();
+		$('#comments_stream').append('<p>' +content.content+ '&nbsp;&nbsp; '+content.rate+'/5 ------'+content.userid+'</p>');
+  
+	});
+	
+</script>
+
+</body>
+</html>

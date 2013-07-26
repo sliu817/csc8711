@@ -1,0 +1,168 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Write your comments</title>  
+	<script type='text/javascript' src='http://static.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase-auth-client.js'></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/movieInfo.css" />
+	<link rel="stylesheet" type="text/css" href="./css/star.css" />
+</head>
+
+<body>
+	<div class="content">
+		<div id="menu">Your Movie: 
+		<div id="name"></div>
+		<div id="loginDiv" style="float:right">
+			<a href="#" onclick="onLoginButtonClicked()" id="login" style="color:yellow">Login</a>
+			<a href="#" onclick="onLogoutButtonClicked()" id="logout-button" style="color:yellow">Logout</a>
+		</div>
+
+<script type="text/javascript">
+
+	var HomeRef = new Firebase('https://sha-gsu-csc8711.firebaseIO.com'); 
+	var myUserID = null;
+	var username = null;
+	//Create an Firebase Simple Login client so we can do Facebook auth
+	var authClient = new FirebaseAuthClient(HomeRef, function(error, user) {
+	if(user) {
+		myUserID = user.id;
+		username = user.displayName;
+		$("#name").text("Hello, "+user.displayName);
+	}
+	});
+	
+	function onLoginButtonClicked() {
+		// attempt to log the user in with your preferred authentication provider
+		authClient.login('facebook');
+	}	
+	function onLogoutButtonClicked() {
+		myUserID = null;
+		$("#name").text("");
+		authClient.logout();
+		
+		if(myUserID == null)
+			alert("log out successfully!");
+	}	
+</script>
+  
+		</div>	
+		<p style="float:right; padding-right:20px;"><a href="./index.html">Homepage</a></p>
+		<div id="moviename"></div>
+		
+		<div id="new_comment">
+			<textarea rows="5" cols="70%" id='comment' placeholder='Write your comment here...'></textarea><br/>
+			
+			<!-- Add a rate star here to replace name. Name is got from the log in.-->
+			<!--Add a rating star to replace name. Name is got from the login system.--->
+			<form name = "ratingform" class="rating">Your Rating:
+			<input type="radio" id="star5" name="rating" value="5"  onClick ="GetSelectedItem()"/><label for="star5" title="Rocks!">5 </label>
+			<input type="radio" id="star4" name="rating" value="4" onClick ="GetSelectedItem()"/><label for="star4" title="Pretty good">4</label>
+			<input type="radio" id="star3" name="rating" value="3"onClick ="GetSelectedItem()" /><label for="star3" title="Meh">3 </label>
+			<input type="radio" id="star2" name="rating" value="2" onClick ="GetSelectedItem()"/><label for="star2" title="Kinda bad">2 </label>
+			<input type="radio" id="star1" name="rating" value="1" onClick ="GetSelectedItem()"/><label for="star1" title="Sucks big time">1</label>
+			</form>
+<script>
+	var star_val;
+	function GetSelectedItem() {
+		var doc=document.ratingform.rating;
+		for (var i=0; i < doc.length; i++)
+		{
+			if (doc[i].checked)
+			{
+				star_val = doc[i].value;   
+			}
+		}
+	}
+</script>
+			
+			
+			<button type="button" ID="submit">Post Review</button>
+        </div>
+		<div id="comments_stream"> </div>
+	</div>
+	
+<script type="text/javascript">
+		
+		function getParameter(param)
+		{
+			var query = window.location.search;
+			var iLen = param.length;
+			var iStart = query.indexOf(param);
+			if(iStart == -1)
+				return "";
+			iStart += iLen +1;
+			var iEnd = query.indexOf("&", iStart);
+			if(iEnd == -1)
+				return query.substring(iStart);
+			return query.substring(iStart, iEnd);
+		}
+	
+		var genrekey = getParameter("gkey");
+		var moviekey = getParameter("mkey");
+		
+		var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+genrekey+'/movies/movie');
+		
+		var newRef = ref.child(moviekey);
+		newRef.once("value", function(snapshot) {
+			if (snapshot.val() === null) {
+				alert("No Movies Available");
+				return false;
+			}
+			
+			$('#moviename').append("<h2>"+snapshot.val().mname+"</h2><br/><img src='"+snapshot.val().image +"' width=180 height=230 >" );
+			$('#moviename').append("<p>"+ snapshot.val().description+"</p>");
+		});
+		
+		var comment = ref.child(moviekey+'/reviews/review');
+		
+		$("#submit").click(function () {
+	
+			var review = $("#comment").val();
+			var name = username;
+			var datelog = new Date();
+			var star = star_val;
+			
+			if (review.length === 0) {
+			alert("comment is empty");
+			return;
+			}
+	
+			datelog = datelog.getHours()+':'+datelog.getMinutes()+':'+ datelog.getSeconds() +" "+ (datelog.getMonth()+1)+'-'+datelog.getDate()+'-'+datelog.getFullYear();
+			console.log(datelog);
+			var homeref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+genrekey+'/movies/movie');
+	
+			var commentsRef = homeref.child(moviekey+'/reviews/review');
+			
+			if(myUserID == null) 
+			alert("You must log in to leave a comment");
+			else{
+			commentsRef.once("value", function(snapshot) {
+				if (snapshot.val() === null) {
+					homeref.child( moviekey+'/reviews/review').set([{userid:name,content:review,datelog:datelog,rate:star}]);////homeref.child( moviekey+'/reviews/review').set([{userid:name,content:review,rate:star,datelog:datelog}]);
+					return;
+				}
+				var gs = snapshot.val();
+      
+				gs.push({userid:name,content:review,datelog:datelog,rate:star});//homeref.child( moviekey+'/reviews/review').set([{userid:name,content:review,rate:star,datelog:datelog}]);
+				commentsRef.set(gs);
+				alert("Comment Added");
+				
+			});
+	
+   
+			$("#comment").val("");
+			$("#name").val("");
+		}
+		});
+
+		comment.limit(20).on("child_added", function(snapshot) {
+			var content= snapshot.val();
+			$('#comments_stream').append('<p>' +content.content+ '------ by &nbsp;'+content.userid+'&nbsp;&nbsp;'+content.datelog+'</p>');
+		});
+
+	</script>
+</body>
+	
+</html>

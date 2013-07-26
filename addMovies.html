@@ -1,0 +1,93 @@
+<html>
+<head>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+	<link rel="stylesheet" type="text/css" href="./css/movieInfo.css" />
+</head>
+<body>
+	<div class="content"> 
+		<p style="float:right; padding-right:20px;"><a href="./index.html">Homepage</a></p>
+		<p style="float:right; padding-right:20px;"><a href="./admin.html">Back</a></p>
+		<div style="padding: 20px 20px;">
+			<h2>Add Movies</h2>
+			<p>Choose Genre:</p>
+			<select id="genreSelect"></select><br />
+	
+			<script type="text/javascript">
+				var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'); //reference 
+				ref.once("value", function(snapshot) {
+					if (snapshot.val() === null) {
+						alert("No Genres Available");
+						return false;
+					}
+					for (var key in snapshot.val())
+						$('#genreSelect').append('<option value="' + key + '">' + snapshot.val()[key].gname + '</option>');
+				});
+			</script>
+  
+  
+			<input type="text" id="movieNumber" placeholder="Movie Number"><br />
+			<input type="text" id="movieName" placeholder="Movie Name"><br />
+			<input type="text" id="movieImage" placeholder="Movie Image"><br />
+			<textarea rows="5" columns="200%" id='movieDescription' placeholder='Movie Description'></textarea>
+			<input type="button" id="submitButton" value="Add">
+		</div>
+	</div>
+	
+<script type="text/javascript">
+	$("#submitButton").click(function () {
+		var newGenreName = $("#genreSelect").val();
+		var newMovieNumber = $("#movieNumber").val();
+		var newMovieName = $("#movieName").val();
+		var newMovieImage = $("#movieImage").val();
+		var newMovieDescription = $("#movieDescription").val();
+	
+		if (newMovieNumber.length === 0) {
+			alert("movie Number is empty");
+			return;
+		}
+		if (!IsNumeric(newMovieNumber)) {
+			alert("Movie Number is not numeric");
+			return;
+		}
+		if (newMovieName.length === 0) {
+			alert("Movie Name is empty");
+			return;
+		}
+
+		var homeref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre');
+		var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+
+                            newGenreName+'/movies/movie');
+		ref.once("value", function(snapshot) {
+			if (snapshot.val() === null) {
+				homeref.child(newGenreName+'/movies/movie').set(
+				[{mno: newMovieNumber, mname: newMovieName, image:newMovieImage, description:newMovieDescription}]);
+				alert("Movie Added");
+				return;
+			}
+			var ts = snapshot.val();
+			for (var key in ts) {
+				if (ts[key].tno === newMovieNumber) {
+					alert("Movie Already Exists");
+					return;
+				}
+			}
+			ts.push({mno: newMovieNumber, mname: newMovieName, image:newMovieImage, description:newMovieDescription});
+			ref.set(ts);
+			alert("Movie Added");
+		});
+
+		$("#movieNumber").val("");
+		$("#movieName").val("");
+		$("#movieImage").val("");
+		$("#movieDescription").val("");
+	});
+
+	function IsNumeric(input){
+		var RE = /^-{0,1}\d*\.{0,1}\d+$/;
+		return (RE.test(input));
+	}
+</script>
+
+</body>
+</html>

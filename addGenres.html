@@ -1,0 +1,48 @@
+<html>
+<head>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+	<link rel="stylesheet" type="text/css" href="./css/movieInfo.css" />
+</head>
+<body>
+	<div class="content"> 	
+		<p style="float:right; padding-right:20px;"><a href="./index.html">Homepage</a></p>
+		<p style="float:right; padding-right:20px;"><a href="./admin.html">Back</a></p>
+		<div style="padding: 20px 20px;">
+			<h2>Add Genres</h2>
+			<input type="text" id="genreName" placeholder="Genre Name"><br />
+			<input type="button" id="submitButton" value="Add">
+		</div>
+	</div>
+	
+<script type="text/javascript">
+	$("#submitButton").click(function () {
+		var newGenreName = $("#genreName").val(); 
+		if (newGenreName.length === 0) {
+			alert("Genre Name is empty");
+			return;
+		}
+		var homeref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/'); //reference to home base
+		var ref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre'); //create new URI FOR every 
+		ref.once("value", function(snapshot) {
+			if (snapshot.val() === null) { //if empty
+				homeref.child('genres/genre').set([{gname: newGenreName}]);
+				alert("Genre Added");
+				return;
+			}
+			var ds = snapshot.val(); 
+			for (var key in ds) {
+				if (ds[key].gname === newGenreName) {
+					alert("Genre Name Already Exists");
+					return;
+				}	
+			}
+			ds.push({gname: newGenreName});
+			ref.set(ds);
+			alert("Genre Added");
+		});
+		$("#genreName").val("");
+	});
+</script>
+</body>
+</html>

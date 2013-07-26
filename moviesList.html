@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Movies List</title>
+	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+	<link rel="stylesheet" type="text/css" href="./css/movieInfo.css" />
+</head>
+<body>
+	<div class="content">
+		<div id="menu"></div>
+		
+		<div class="main">
+			<div id="movies"></div>
+		</div>	
+		<p style="float:right; padding-right:20px;"><a href="./index.html">Homepage</a></p>		
+	</div>
+	
+	<script type="text/javascript">
+		function getParameter(param)
+		{
+			var query = window.location.search;
+			var iLen = param.length;
+			var iStart = query.indexOf(param);
+			if(iStart == -1)
+				return "";
+			iStart += iLen +1;
+			var iEnd = query.indexOf("&", iStart);
+			if(iEnd == -1)
+				return query.substring(iStart);
+			return query.substring(iStart, iEnd);
+		}
+		var Genrekey = getParameter("gkey");
+		
+		var homeref = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre');
+		var newRef = new Firebase('https://sha-gsu-csc8711.firebaseIO.com/genres/genre/'+ Genrekey+'/movies/movie');
+	
+		var aref = homeref.child(Genrekey);
+		aref.once("value", function(snapshot){
+			$('#menu').append(snapshot.val().gname);
+		});
+	
+		newRef.once("value", function(snapshot) {
+			if (snapshot.val() === null) {
+				alert("No Movies Available");
+				return false;
+			}
+			for (var key in snapshot.val()){
+				$('#movies').append("<div  style='float:left;width:20%' > <table><tr><td><p><a href='WriteReview.html?gkey="+Genrekey+
+									"&mkey="+key+"'>" + "<img src='"+snapshot.val()[key].image +"' width=100 height=130></a></p></td></tr>"+
+									"<tr><td style='text-align:center;'><p><a href='WriteReview.html?gkey="+Genrekey+
+									"&mkey="+key+"'>" +  snapshot.val()[key].mname+"</a></p></td></tr></table></div>");
+				
+			}	
+		});
+		
+		</script>
+	</body>
+	
+</html>
