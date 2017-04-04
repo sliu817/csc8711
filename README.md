@@ -1,15 +1,14 @@
-$ mkdir ~/Hello-World
-# Creates a directory for your project called "Hello-World" in your user directory
+##This firebase application is a simple “Movie Review in One Sentence” website.
+Basically, home page will show several movie genres, each genre is linked to a
+movie list page which shows all the movies in this genre, and each movie is linked
+to a writing review page. This page will also present tens of recently reviews about
+this movie. All these complete the search and display functions.
 
+##Also, there will have add and delete functions for administrators, such as adding
+genres, movies and reviews or deleting, update them.
 
-cd ~/Hello-World
-# Changes the current working directory to your newly created directory
-
-
-git init
-# Sets up the necessary Git files
-
-# Initialized empty Git repository in /Users/you/Hello-World/.git/
-
-touch README
-# Creates a file called "README" in your Hello-World directory
+##The “writing review” page is kind of like simple comment or sharing system. Since
+firebase is a real-time database and is designed for collaborative applications, then
+this review page will not only provide a text area for writing data for all the users,
+but also display recently comment data for sharing their ideas. Further, we will use
+firebase security rules to secure these actions.
